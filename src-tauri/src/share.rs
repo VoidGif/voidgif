@@ -84,3 +84,39 @@ pub fn reveal_in_explorer(path: &str) -> Result<(), String> {
 pub fn reveal_in_explorer(_path: &str) -> Result<(), String> {
     Err("unsupported".into())
 }
+
+/// Opens an https URL in the default browser. The caller passes only URLs from
+/// a fixed allowlist (see `external_page_url` in lib.rs) — the webview can never
+/// reach this with an arbitrary URL or path.
+#[cfg(windows)]
+pub fn open_external(url: &str) -> Result<(), String> {
+    use std::os::windows::ffi::OsStrExt;
+    use windows::core::PCWSTR;
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::Shell::ShellExecuteW;
+    use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
+
+    let verb: Vec<u16> = std::ffi::OsStr::new("open").encode_wide().chain([0]).collect();
+    let file: Vec<u16> = std::ffi::OsStr::new(url).encode_wide().chain([0]).collect();
+    // ShellExecuteW returns an HINSTANCE > 32 on success (legacy Win32 convention).
+    let h = unsafe {
+        ShellExecuteW(
+            Some(HWND(std::ptr::null_mut())),
+            PCWSTR(verb.as_ptr()),
+            PCWSTR(file.as_ptr()),
+            PCWSTR::null(),
+            PCWSTR::null(),
+            SW_SHOWNORMAL,
+        )
+    };
+    if h.0 as isize > 32 {
+        Ok(())
+    } else {
+        Err(format!("ShellExecuteW failed ({})", h.0 as isize))
+    }
+}
+
+#[cfg(not(windows))]
+pub fn open_external(_url: &str) -> Result<(), String> {
+    Err("unsupported".into())
+}

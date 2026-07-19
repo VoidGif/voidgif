@@ -190,6 +190,10 @@ export const copyFileToClipboard = (path: string) =>
 export const revealInExplorer = (path: string) =>
   invoke<void>("reveal_in_explorer", { path });
 
+/** Opens a fixed project page (source · notices · privacy · website) in the default browser. */
+export const openExternal = (page: string) =>
+  invoke<void>("open_external", { page });
+
 // ---- Autosave / crash recovery ---------------------------------------------------
 
 /** Saves the live session to the autosave slot; false when there's no session. */

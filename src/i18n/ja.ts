@@ -199,4 +199,13 @@ export const ja: Record<keyof typeof en, string> = {
   // 設定ダイアログ
   defaultFps: "デフォルトFPS",
   captureCursorDefault: "デフォルトでカーソルをキャプチャ",
+
+  // 情報
+  aboutTitle: "情報",
+  aboutLicense:
+    "GNU AGPL-3.0-or-later のフリーソフトウェアです。本プログラムは一切の保証なしで提供されます。",
+  aboutSource: "ソースコード",
+  aboutNotices: "サードパーティ通知",
+  aboutPrivacy: "プライバシーポリシー",
+  aboutWebsite: "ウェブサイト",
 };

@@ -1,7 +1,22 @@
+import { useEffect, useState } from "react";
+import { getVersion } from "@tauri-apps/api/app";
 import { useSettingsStore, useT } from "../stores/settingsStore";
+import { isTauri, openExternal } from "../lib/ipc";
 import { ThemePicker, LanguagePicker } from "./pickers";
 
 const FPS_CHOICES = [15, 24, 30, 60];
+
+// Fallback when getVersion() is unavailable (browser preview). Keep in sync
+// with the version in tauri.conf.json / Cargo.toml.
+const FALLBACK_VERSION = "0.1.0";
+
+// About-section links: [open_external page key, i18n label key].
+const ABOUT_LINKS = [
+  ["source", "aboutSource"],
+  ["notices", "aboutNotices"],
+  ["privacy", "aboutPrivacy"],
+  ["website", "aboutWebsite"],
+] as const;
 
 /**
  * Settings modal reachable from the Home gear button. Every control saves
@@ -15,6 +30,16 @@ export default function SettingsDialog({ onClose }: { onClose: () => void }) {
   const defaultFps = useSettingsStore((s) => s.defaultFps);
   const defaultCursor = useSettingsStore((s) => s.defaultCursor);
   const update = useSettingsStore((s) => s.update);
+
+  // getVersion() is permitted by core:default in capabilities/default.json;
+  // browser preview has no Tauri, so it keeps the hardcoded fallback.
+  const [version, setVersion] = useState(FALLBACK_VERSION);
+  useEffect(() => {
+    if (!isTauri) return;
+    getVersion()
+      .then(setVersion)
+      .catch(() => {});
+  }, []);
 
   return (
     <div
@@ -77,6 +102,23 @@ export default function SettingsDialog({ onClose }: { onClose: () => void }) {
           />
           {t("captureCursorDefault")}
         </label>
+
+        <div className="my-5 h-px bg-line-strong" />
+
+        <div className="mb-2 text-sm font-medium text-ink-2">{t("aboutTitle")}</div>
+        <p className="text-sm text-ink-1">VoidGif {version} · © 2026 VoidGif</p>
+        <p className="mt-1 text-xs leading-relaxed text-ink-3">{t("aboutLicense")}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {ABOUT_LINKS.map(([page, key]) => (
+            <button
+              key={page}
+              onClick={() => void openExternal(page).catch(() => {})}
+              className="rounded-lg border border-line-strong bg-void-800 px-3 py-1.5 text-xs font-medium text-ink-1 vg-transition hover:border-ink-3"
+            >
+              {t(key)}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

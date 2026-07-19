@@ -201,6 +201,15 @@ export const en = {
   // ---- Settings dialog ----
   defaultFps: "Default FPS",
   captureCursorDefault: "Capture cursor by default",
+
+  // ---- About ----
+  aboutTitle: "About",
+  aboutLicense:
+    "Free software under the GNU AGPL-3.0-or-later. This program comes with ABSOLUTELY NO WARRANTY.",
+  aboutSource: "Source code",
+  aboutNotices: "Third-party notices",
+  aboutPrivacy: "Privacy policy",
+  aboutWebsite: "Website",
 } as const;
 
 export type TranslationKey = keyof typeof en;

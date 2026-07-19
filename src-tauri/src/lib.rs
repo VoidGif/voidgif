@@ -1113,6 +1113,27 @@ fn reveal_in_explorer(path: String) -> CmdResult<()> {
     share::reveal_in_explorer(&path)
 }
 
+// -------------------------------------------------- share (external pages)
+
+/// Maps a fixed page key to its canonical https URL. The set is hardcoded so
+/// the webview can only ever open these pages — never an arbitrary URL or path.
+fn external_page_url(page: &str) -> CmdResult<&'static str> {
+    match page {
+        "source" => Ok("https://github.com/VoidGif/voidgif"),
+        "notices" => Ok("https://github.com/VoidGif/voidgif/blob/main/THIRD-PARTY-NOTICES.md"),
+        "privacy" => Ok("https://voidgif.github.io/privacy/"),
+        "website" => Ok("https://voidgif.github.io"),
+        other => Err(format!("unknown page: {other}")),
+    }
+}
+
+/// Opens one of the fixed About-section pages in the default browser. Async per
+/// the project rule that all commands are `async fn`.
+#[tauri::command]
+async fn open_external(page: String) -> CmdResult<()> {
+    share::open_external(external_page_url(&page)?)
+}
+
 // ----------------------------------------------------------------- hotkeys
 
 fn register_hotkeys(app: &AppHandle) {
@@ -1351,6 +1372,7 @@ pub fn run() {
             restore_autosave,
             copy_file_to_clipboard,
             reveal_in_explorer,
+            open_external,
             set_tray_language,
             settings::get_settings,
             settings::set_settings
@@ -1391,5 +1413,22 @@ fn sweep_stale_spools() {
         {
             let _ = std::fs::remove_file(&path);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::external_page_url;
+
+    #[test]
+    fn external_page_url_maps_known_and_rejects_unknown() {
+        assert!(external_page_url("source").unwrap().starts_with("https://"));
+        assert!(external_page_url("notices").unwrap().starts_with("https://"));
+        assert!(external_page_url("privacy").unwrap().starts_with("https://"));
+        assert!(external_page_url("website").unwrap().starts_with("https://"));
+        // Anything outside the allowlist is refused before the shell is touched.
+        assert!(external_page_url("").is_err());
+        assert!(external_page_url("file:///etc/passwd").is_err());
+        assert!(external_page_url("https://evil.example").is_err());
     }
 }

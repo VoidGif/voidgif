@@ -199,4 +199,13 @@ export const ko: Record<keyof typeof en, string> = {
   // 설정 대화상자
   defaultFps: "기본 FPS",
   captureCursorDefault: "기본으로 커서 캡처",
+
+  // 정보
+  aboutTitle: "정보",
+  aboutLicense:
+    "GNU AGPL-3.0-or-later 자유 소프트웨어입니다. 이 프로그램은 어떠한 보증도 없이 제공됩니다.",
+  aboutSource: "소스 코드",
+  aboutNotices: "서드파티 고지",
+  aboutPrivacy: "개인정보처리방침",
+  aboutWebsite: "웹사이트",
 };

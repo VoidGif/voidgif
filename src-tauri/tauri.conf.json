@@ -28,6 +28,8 @@
   },
   "bundle": {
     "active": true,
+    "copyright": "© 2026 VoidGif",
+    "publisher": "VoidGif",
     "targets": ["msi", "nsis"],
     "icon": [
       "icons/32x32.png",
