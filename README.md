@@ -50,6 +50,8 @@ macOS builds exclude AGPL components and use an MIT GIF encoder
 
 VoidGif is licensed under the **GNU AGPL-3.0-or-later** (see [LICENSE](LICENSE)).
 GIF encoding on Windows uses [gifski] (AGPL-3.0). macOS builds are configured
-so that no AGPL components are compiled in.
+so that no AGPL components are compiled in. Licenses of all bundled
+open-source components are listed in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 [gifski]: https://gif.ski

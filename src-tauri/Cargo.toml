@@ -3,6 +3,7 @@ name = "voidgif"
 version = "0.1.0"
 description = "Record your screen, edit every frame, export beautiful GIFs."
 authors = ["VoidGif"]
+license = "AGPL-3.0-or-later"
 edition = "2021"
 rust-version = "1.77"
 
