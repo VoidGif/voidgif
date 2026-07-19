@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  VoidGif — MSIX package manifest for Microsoft Store submission.
+
+  This is a Win32 (Desktop Bridge) full-trust package: the app is the normal
+  Tauri release .exe, wrapped in MSIX only so the Store can distribute + sign it.
+  There is NO app-container sandbox; EntryPoint="Windows.FullTrustApplication"
+  + the runFullTrust restricted capability give the .exe the same access it has
+  when run directly. That capability is EXPECTED and normal for packaged desktop
+  apps and does not, by itself, slow certification.
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  THREE VALUES MUST BE FILLED IN FROM PARTNER CENTER BEFORE PACKAGING.     │
+  │  Reserve the app name "VoidGif" first, then open the app's                │
+  │  Product management ▸ Product identity page and copy (no braces below —   │
+  │  the real placeholders are only in the Identity/Properties elements):     │
+  │                                                                           │
+  │   IDENTITY_NAME          ->  Identity @Name                               │
+  │                              (e.g.  1234ABCD.VoidGif)                     │
+  │   PUBLISHER              ->  Identity @Publisher                          │
+  │                              (e.g.  CN=ABCDEF01-2345-6789-....)           │
+  │   PUBLISHER_DISPLAY_NAME ->  Properties/PublisherDisplayName              │
+  │                              (your seller display name)                   │
+  │                                                                           │
+  │  Either edit them here by hand, OR pass them to build-msix.ps1 as         │
+  │  -IdentityName / -Publisher / -PublisherDisplayName (recommended — the    │
+  │  script substitutes into a copy and leaves this template untouched).      │
+  │  Values are CASE-SENSITIVE and must match Partner Center EXACTLY.         │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  Version: keep Major.Minor.Build.0 — the 4th (revision) field must stay 0
+  (reserved by the Store). Bump for each new submission (0.1.0.0 → 0.1.1.0 …).
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity
+    Name="{{IDENTITY_NAME}}"
+    Publisher="{{PUBLISHER}}"
+    Version="0.1.0.0"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <!-- Must exactly match a name reserved for the app in Partner Center.
+         Both "VoidGif" and "VoidGif - GIF Screen Recorder & Editor" are
+         reserved; the short one keeps the Start-menu entry clean while the
+         Store listing uses the long one. -->
+    <DisplayName>VoidGif</DisplayName>
+    <PublisherDisplayName>{{PUBLISHER_DISPLAY_NAME}}</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Record your screen, edit every frame, and export beautiful GIFs.</Description>
+  </Properties>
+
+  <Dependencies>
+    <!-- 10.0.17763 = Windows 10 1809, the oldest build with a reliable Windows
+         Graphics Capture pipeline (the recorder backend). MaxVersionTested is
+         the SDK/OS this package was validated against. -->
+    <TargetDeviceFamily
+      Name="Windows.Desktop"
+      MinVersion="10.0.17763.0"
+      MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+    <Resource Language="ko-kr" />
+    <Resource Language="ja-jp" />
+  </Resources>
+
+  <Applications>
+    <Application
+      Id="VoidGif"
+      Executable="VoidGif.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="VoidGif"
+        Description="Record your screen, edit every frame, and export beautiful GIFs."
+        BackgroundColor="#17141F"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile
+          ShortName="VoidGif"
+          Square71x71Logo="Assets\Square71x71Logo.png"
+          Square310x310Logo="Assets\Square310x310Logo.png"
+          Wide310x150Logo="Assets\Wide310x150Logo.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+
+</Package>

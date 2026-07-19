@@ -1,0 +1,8 @@
+# Build outputs of build-msix.ps1 — never commit these.
+staging/
+*.msix
+*.pri
+priconfig.xml
+# Local-test signing material (throwaway).
+*.pfx
+*.cer

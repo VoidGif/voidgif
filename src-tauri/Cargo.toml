@@ -1,0 +1,84 @@
+[package]
+name = "voidgif"
+version = "0.1.0"
+description = "Record your screen, edit every frame, export beautiful GIFs."
+authors = ["VoidGif"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "voidgif_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[features]
+# High-quality gifski GIF encoder (AGPL-3.0). Enabled by default for
+# Windows/open-source builds. The dependency itself is additionally gated to
+# non-macOS targets below, so a Mac App Store build can NEVER link AGPL code
+# regardless of feature flags — it always uses the MIT `gif` fallback encoder.
+default = ["gifski-encoder"]
+gifski-encoder = ["dep:gifski"]
+# Serve the embedded frontend bundle instead of devUrl. `npx tauri build`
+# enables this automatically; a direct `cargo build --release` MUST pass
+# `--features custom-protocol` or the exe loads http://localhost:1420 (vite)
+# and shows a blank window on user machines.
+custom-protocol = ["tauri/custom-protocol"]
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-global-shortcut = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+log = "0.4"
+env_logger = "0.11"
+crossbeam-channel = "0.5"
+
+# Fallback GIF encoder (MIT/Apache-2.0) — the only GIF path on macOS.
+gif = "0.13"
+imgref = "1.11"
+rgb = "0.8.50"
+
+# APNG + PNG sequence
+png = "0.18"
+
+# Project file compression
+zstd = "0.13"
+
+# SIMD crop/resize hot path
+fast_image_resize = "6"
+
+[target.'cfg(windows)'.dependencies]
+windows-capture = "2.0.0"
+windows = { version = "0.62", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_System_WinRT",
+    "Win32_UI_WindowsAndMessaging",
+    # Clipboard file-drop (CF_HDROP) for "copy exported file"
+    "Win32_System_DataExchange",
+    "Win32_System_Memory",
+    "Win32_System_Ole",
+    "Win32_UI_Shell",
+] }
+
+# AGPL — hard-excluded from macOS builds (see [features] note).
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+gifski = { version = "1.34", default-features = false, optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+screencapturekit = "=8.0.0"
+core-graphics = "0.25"
+
+[dev-dependencies]
+crossbeam-channel = "0.5"
+# Hand-encoding GIFs in the gif_import roundtrip/disposal tests.
+gif = "0.13"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

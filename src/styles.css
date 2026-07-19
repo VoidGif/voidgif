@@ -1,0 +1,321 @@
+@import "tailwindcss";
+
+/* ---- Semantic theme variables (dark = default look, unchanged) ---------- */
+:root {
+  --vg-bg-deep: #09090d;
+  --vg-bg: #0e0e14;
+  --vg-bg-raised: #13131b;
+  --vg-bg-panel: #191923;
+  --vg-bg-hover: #23232f;
+  --vg-bg-scroll: #32323f;
+  --vg-bg-scroll-hover: #4a4a5a;
+
+  --vg-line: rgba(255, 255, 255, 0.06);
+  --vg-line-strong: rgba(255, 255, 255, 0.1);
+
+  --vg-ink: #e7e7ee;
+  --vg-ink-mid: #a1a1b2;
+  --vg-ink-dim: #71717f;
+
+  --vg-check-a: #191922;
+  --vg-check-b: #14141c;
+
+  /* Frame-group palette (6 distinguishable hues from the accent family + a
+     spread around the wheel). Used for the filmstrip band + chip. */
+  --vg-group-0: #a78bfa;
+  --vg-group-1: #38bdf8;
+  --vg-group-2: #34d399;
+  --vg-group-3: #fbbf24;
+  --vg-group-4: #fb7185;
+  --vg-group-5: #e879f9;
+
+  /* Motion tokens — one shared easing + two durations for the whole app. */
+  --vg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --vg-dur-1: 120ms;
+  --vg-dur-2: 160ms;
+}
+
+/* ---- Light theme (html.light) — tasteful light palette, same accent ----- */
+html.light {
+  --vg-bg-deep: #f6f6f8;
+  --vg-bg: #ffffff;
+  --vg-bg-raised: #ffffff;
+  --vg-bg-panel: #edecf1;
+  --vg-bg-hover: #e3e2ea;
+  --vg-bg-scroll: #cfcdd8;
+  --vg-bg-scroll-hover: #b4b2c2;
+
+  --vg-line: rgba(0, 0, 0, 0.08);
+  --vg-line-strong: rgba(0, 0, 0, 0.12);
+
+  --vg-ink: #1a1a22;
+  --vg-ink-mid: #52525e;
+  --vg-ink-dim: #8a8a97;
+
+  --vg-check-a: #e9e9ee;
+  --vg-check-b: #f2f2f5;
+
+  /* Slightly deeper hues so bands/chips keep contrast on the light canvas. */
+  --vg-group-0: #7c3aed;
+  --vg-group-1: #0284c7;
+  --vg-group-2: #059669;
+  --vg-group-3: #d97706;
+  --vg-group-4: #e11d48;
+  --vg-group-5: #c026d3;
+}
+
+@theme {
+  /* Backgrounds route through the semantic vars so themes switch at runtime;
+     existing bg-void-* utility classes keep working unchanged. */
+  --color-void-950: var(--vg-bg-deep);
+  --color-void-900: var(--vg-bg);
+  --color-void-850: var(--vg-bg-raised);
+  --color-void-800: var(--vg-bg-panel);
+  --color-void-700: var(--vg-bg-hover);
+  --color-void-600: var(--vg-bg-scroll);
+
+  /* Semantic text + line utilities: text-ink-1/2/3, border-line, bg-line. */
+  --color-ink-1: var(--vg-ink);
+  --color-ink-2: var(--vg-ink-mid);
+  --color-ink-3: var(--vg-ink-dim);
+  --color-line: var(--vg-line);
+  --color-line-strong: var(--vg-line-strong);
+
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+  --color-danger-500: #f43f5e;
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", -apple-system,
+    "SF Pro Text", system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
+  background: var(--vg-bg-deep);
+  color: var(--vg-ink);
+  font-family: var(--font-sans);
+}
+
+/* Transparent OS windows (overlay/border/recorder) must not paint the opaque
+   app background, or a fullscreen overlay renders as a solid black screen. */
+html.transparent-window,
+html.transparent-window body,
+html.transparent-window #root {
+  background: transparent;
+}
+
+/* Thin, unobtrusive scrollbars for filmstrip / panels */
+*::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--vg-bg-scroll);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--vg-bg-scroll-hover);
+}
+
+/* Scrollable toolbar without a visible scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Checkerboard backdrop behind transparent frames in the preview */
+.checkerboard {
+  background-image: repeating-conic-gradient(
+    var(--vg-check-a) 0% 25%,
+    var(--vg-check-b) 0% 50%
+  );
+  background-size: 16px 16px;
+}
+
+/* ---- Focus visibility (keyboard only) ----------------------------------- */
+:where(button, [role="button"], input, select, textarea, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
+/* ---- Shared motion utility ----------------------------------------------
+   One transition set for all interactive chrome, so hover/active states move
+   at the same speed everywhere (ease-out per the enter-motion rule). */
+.vg-transition {
+  transition:
+    color var(--vg-dur-2) var(--vg-ease-out),
+    background-color var(--vg-dur-2) var(--vg-ease-out),
+    border-color var(--vg-dur-2) var(--vg-ease-out),
+    box-shadow var(--vg-dur-2) var(--vg-ease-out),
+    opacity var(--vg-dur-2) var(--vg-ease-out),
+    transform var(--vg-dur-1) var(--vg-ease-out);
+}
+
+/* ---- Modal anatomy: scrim fade + panel rise-in (~150ms, ease-out) ------- */
+@keyframes vg-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes vg-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.vg-scrim {
+  animation: vg-fade-in var(--vg-dur-2) var(--vg-ease-out) both;
+}
+.vg-modal {
+  animation: vg-rise-in var(--vg-dur-2) var(--vg-ease-out) both;
+}
+
+/* ---- Toolbar tooltips (CSS-only) ----------------------------------------
+   `.vg-tt` on the trigger, `.vg-tip` on the chip. Appears below after a
+   ~150ms hover intent delay; also shown on keyboard focus. The chip stays
+   dark in both themes — it floats over mixed content like an OS tooltip. */
+.vg-tt {
+  position: relative;
+}
+.vg-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  --tip-x: -50%;
+  z-index: 60;
+  display: block;
+  width: max-content;
+  max-width: 250px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: #16161f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  color: #e7e7ee;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(var(--tip-x), -3px);
+  transition:
+    opacity var(--vg-dur-1) var(--vg-ease-out),
+    transform var(--vg-dur-1) var(--vg-ease-out);
+}
+.vg-tip-start {
+  left: 0;
+  --tip-x: 0%;
+}
+.vg-tip-end {
+  left: auto;
+  right: 0;
+  --tip-x: 0%;
+}
+.vg-tt:hover > .vg-tip,
+.vg-tt:focus-visible > .vg-tip {
+  opacity: 1;
+  transform: translate(var(--tip-x), 0);
+  transition-delay: 150ms;
+}
+.vg-tip-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+.vg-tip-desc {
+  display: block;
+  margin-top: 1px;
+  color: #a1a1b2;
+}
+.vg-tip kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #b9b9c7;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+/* ---- Neumorphic REC button (recorder control bar — always dark chrome) --
+   Soft raised ring with an inner red core, per the ScreenPal reference:
+   depth from a top highlight + bottom inner shade, glow on hover, a real
+   pressed state on :active. */
+.vg-rec {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: radial-gradient(120% 120% at 32% 26%, #2c2c3a 0%, #17171f 72%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.45);
+  transition:
+    border-color var(--vg-dur-2) var(--vg-ease-out),
+    box-shadow var(--vg-dur-2) var(--vg-ease-out),
+    transform var(--vg-dur-1) var(--vg-ease-out);
+}
+.vg-rec-core {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 32% 28%, #ff7b72 0%, #ef3b47 48%, #b3172a 100%);
+  box-shadow:
+    0 0 0 0 rgba(244, 63, 94, 0),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  transition:
+    box-shadow var(--vg-dur-2) var(--vg-ease-out),
+    transform var(--vg-dur-1) var(--vg-ease-out);
+}
+.vg-rec:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.vg-rec:hover .vg-rec-core {
+  box-shadow:
+    0 0 12px 2px rgba(244, 63, 94, 0.45),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.vg-rec:active {
+  transform: translateY(0.5px);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.6),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.vg-rec:active .vg-rec-core {
+  transform: scale(0.92);
+}
+
+/* ---- Reduced motion: strip every animation/transition this sheet adds --- */
+@media (prefers-reduced-motion: reduce) {
+  .vg-scrim,
+  .vg-modal {
+    animation: none;
+  }
+  .vg-transition,
+  .vg-tip,
+  .vg-rec,
+  .vg-rec-core {
+    transition: none;
+  }
+}
